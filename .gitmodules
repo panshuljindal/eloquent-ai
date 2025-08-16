@@ -1,0 +1,6 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/panshuljindal/eloquent-ai-frontend
+[submodule "backend"]
+	path = backend
+	url = https://github.com/panshuljindal/eloquent-ai-backend
