@@ -41,7 +41,6 @@ Links to module READMEs:
 - Guardrails and safety
   - Prompt‑injection detection and rejection.
   - PII/secret redaction in inputs (emails, phones, common secret patterns).
-  - Output sanitation to strip active content/HTML.
 - Summarization
   - Per‑conversation summary endpoint to produce a concise recap with next steps.
 - Simple authentication
@@ -99,8 +98,8 @@ npm start
 ## Deployment plan (AWS)
 
 Current state
-- Backend is deployed on a single EC2 instance running the Dockerized FastAPI app. Requests terminate at a reverse proxy, which forwards to Gunicorn/Uvicorn. API base exposed at `http://18.223.20.255:5000`.
-- Frontend is not deployed yet; run locally pointing to the API base.
+- Backend is deployed on a single EC2 instance running the FastAPI app. API base exposed at `http://18.223.20.255:5000`.
+- Frontend is deployed on a single EC2 instance serving the Frontend. API base exposed at `http://18.218.235.66:3000`
 
 Target architecture (scalable, production‑ready)
 1) Containerization & registry
@@ -135,13 +134,12 @@ Target architecture (scalable, production‑ready)
   - Backend: test, build, push ECR, deploy ECS (blue/green via CodeDeploy or rolling update).
   - Frontend: build, upload to S3, invalidate CloudFront cache.
 
-8) Frontend hosting (when ready)
+8) Frontend hosting (Production)
 - S3 static hosting + CloudFront (HTTPS, caching, compression).
 - Environment config via build‑time variables (`REACT_APP_API_BASE` set to the ALB domain or API gateway).
 
 9) Security hardening
 - Restrict CORS to known origins, enable HTTPS end‑to‑end, rotate secrets.
-- Add JWT‑based auth (e.g., Cognito) and enforce conversation ownership on all endpoints.
 - Add rate limiting (API Gateway or NGINX, or app‑level limiter backed by Redis/ElastiCache).
 
 Throughput and scaling
@@ -150,8 +148,9 @@ Throughput and scaling
 ---
 
 ## Notable features beyond the baseline
-- Guardrails: prompt‑injection detection, PII/secret redaction, safe output formatting.
+- Guardrails: prompt‑injection detection, PII/secret redaction, safe formatting.
 - Conversation summary endpoint for quick recaps.
+- JWT/OAuth login and authorization on conversation resources.
 - RAG with Pinecone (category + text fields returned as context to the model).
 - Streaming chat UX (WebSocket with SSE fallback), token‑level updates in the UI.
 - Message filtering so system and guardrail messages are hidden/normalized in the client.
@@ -161,7 +160,6 @@ Throughput and scaling
 
 ## Next steps
 - Swap SQLite for Postgres + Alembic migrations.
-- JWT/OAuth login and authorization on conversation resources.
 - Rate limiting and abuse protection.
 - Caching layer for repeated queries (Redis) where appropriate.
 
