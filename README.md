@@ -6,8 +6,8 @@ This repository aggregates two modules (backend and frontend) built for the AI E
 - Frontend: React + TypeScript + TailwindCSS
 
 Links to module READMEs:
-- Backend: `backend/README.md`
-- Frontend: `frontend/README.md`
+- Backend: [`backend/README.md`](https://github.com/panshuljindal/eloquent-ai-backend/blob/fdfbc37fcd055d6ac35dada2de1e6704123632ae/README.md)
+- Frontend: [`frontend/README.md`](https://github.com/panshuljindal/eloquent-ai-frontend/blob/41e221ac8c357a5593761b97bc66933b879eb4e2/README.md)
 
 ---
 
