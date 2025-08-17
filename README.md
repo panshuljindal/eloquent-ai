@@ -13,7 +13,7 @@ Links to module READMEs:
 
 ## Live Backend API
 
-- Public API base: `http://18.223.20.255:5000`
+- Public API base: [http://18.223.20.255:5000](http://18.223.20.255:5000)
   - Auth: `/api/auth/signup`, `/api/auth/login`
   - Chat: `/api/chat/conversations`, `/api/chat/messages/:id`, `/api/chat/create`, `/api/chat/delete/:id`, `/api/chat/summarize/:id`
   - Streaming (SSE): `POST /api/chat/stream` — streams assistant tokens as Server‑Sent Events
@@ -23,7 +23,7 @@ Links to module READMEs:
 
 ## Live Frontend
 
-- Public app: `http://18.218.235.66:3000`
+- Public app: [http://18.218.235.66:3000](http://18.218.235.66:3000)
 - Backend API target is configurable via `REACT_APP_API_BASE` (see `frontend/src/config/env.ts`). Default points to the live backend `http://18.223.20.255:5000`.
 - Streaming from the UI uses WebSocket first: `ws://<API_HOST>/api/chat/ws/{conversation_id}` with automatic SSE fallback to `POST /api/chat/stream`.
 ---
