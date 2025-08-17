@@ -16,11 +16,16 @@ Links to module READMEs:
 - Public API base: `http://18.223.20.255:5000`
   - Auth: `/api/auth/signup`, `/api/auth/login`
   - Chat: `/api/chat/conversations`, `/api/chat/messages/:id`, `/api/chat/create`, `/api/chat/delete/:id`, `/api/chat/summarize/:id`
+  - Streaming (SSE): `POST /api/chat/stream` — streams assistant tokens as Server‑Sent Events
+  - WebSocket: `/api/chat/ws/{conversation_id}` — bidirectional streaming; auth via `Authorization: Bearer <token>` or `?token=`
 - Hosting: EC2 behind a reverse proxy. Health check at `/health`.
-- Throughput: On a single EC2 instance (for example, t3.medium) with Gunicorn + Uvicorn workers, the service can sustain on the order of a few dozen requests per second for chat creation under typical OpenAI latency and account rate limits. Horizontal scaling (see plan below) raises this linearly. Replace with your measured RPS for your instance type.
+- Throughput: On a single EC2 instance (for example, t3.micro) with Gunicorn + Uvicorn workers, the service can sustain on the order of a few dozen requests per second for chat creation under typical OpenAI latency and account rate limits. Horizontal scaling (see plan below) raises this linearly. Replace with your measured RPS for your instance type.
 
-Note: The frontend is currently run locally
+## Live Frontend
 
+- Public app: `http://18.218.235.66:3000`
+- Backend API target is configurable via `REACT_APP_API_BASE` (see `frontend/src/config/env.ts`). Default points to the live backend `http://18.223.20.255:5000`.
+- Streaming from the UI uses WebSocket first: `ws://<API_HOST>/api/chat/ws/{conversation_id}` with automatic SSE fallback to `POST /api/chat/stream`.
 ---
 
 ## What’s implemented
@@ -35,13 +40,20 @@ Note: The frontend is currently run locally
   - Soft delete for conversations and listing by user.
 - Guardrails and safety
   - Prompt‑injection detection and rejection.
-  - PII/secret redaction in inputs and outputs (emails, phones, common secret patterns).
+  - PII/secret redaction in inputs (emails, phones, common secret patterns).
   - Output sanitation to strip active content/HTML.
 - Summarization
   - Per‑conversation summary endpoint to produce a concise recap with next steps.
 - Simple authentication
   - Signup and login with bcrypt password hashing. Returning users can see prior chats.
 - CORS configured for development; adjust for production.
+
+### Frontend (React + TypeScript)
+- Clean chat UI with conversation list and message history
+- Markdown rendering and light/dark theme (no‑flash dark mode)
+- Auth screens (signup/login) and guest mode support
+- Conversation actions: summarize and delete
+- Streaming UX: token‑by‑token updates via WebSocket, with automatic SSE fallback when WS isn’t available
 
 ---
 
@@ -107,6 +119,7 @@ Target architecture (scalable, production‑ready)
 - ECS Task Definition exposing container port 8000; environment from SSM Parameter Store/Secrets Manager (OpenAI key, Pinecone config, DATABASE_URL).
 - ECS Service behind an Application Load Balancer with health check on `/health`.
 - Autoscaling: target tracking on CPU 60–70% and/or ALB RequestCountPerTarget; min 2 tasks across AZs.
+- ALB/NGINX config must support WebSockets (Upgrade/Connection headers) and disable buffering for SSE.
 
 5) Data layer
 - Replace SQLite with Amazon RDS (PostgreSQL). Introduce Alembic for migrations.
@@ -140,6 +153,7 @@ Throughput and scaling
 - Guardrails: prompt‑injection detection, PII/secret redaction, safe output formatting.
 - Conversation summary endpoint for quick recaps.
 - RAG with Pinecone (category + text fields returned as context to the model).
+- Streaming chat UX (WebSocket with SSE fallback), token‑level updates in the UI.
 - Message filtering so system and guardrail messages are hidden/normalized in the client.
 - Clean UI with dark mode, Markdown rendering, and guest mode.
 
@@ -154,4 +168,4 @@ Throughput and scaling
 ---
 
 ## License
-Proprietary – All rights reserved (update if needed).
+Proprietary – All rights reserved
